@@ -1,0 +1,15 @@
+.env
+.env.*
+*.key
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+backend/.venv/
+backend/__pycache__/
+static/cards/
+static/stats.json
+test_*
+.git
+.gitignore
+docker-compose.yml

@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevCard Generator</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-page: #000000;
+            --bg-surface: #0a0a0a;
+            --border-color: #1a1a1a;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-tertiary: #444444;
+            
+            --accent: #f97316;
+            --accent-hover: #ea6c0a;
+            
+            --font-main: 'Space Grotesk', 'Inter', sans-serif;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+        
+        button {
+            font-family: var(--font-main);
+        }
+        
+        input {
+            font-family: var(--font-main);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes dotPulse {
+            0% { content: ""; }
+            25% { content: "."; }
+            50% { content: ".."; }
+            75% { content: "..."; }
+        }
+        
+        @keyframes pulseOpacity {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .fade-up {
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        /* 1. NAVBAR */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            background: var(--bg-page);
+            border-bottom: 1px solid #111111;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-inner {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+        }
+        
+        .logo {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .nav-btn {
+            background: var(--accent);
+            color: #000000;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        /* 2. HERO SECTION */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding-top: 56px; /* offset nav */
+            overflow: hidden;
+        }
+        
+        .hero-bg-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20vw;
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--border-color);
+            z-index: 0;
+            user-select: none;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .hero-label {
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .hero-title {
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            margin: 0;
+        }
+        
+        .hero-title .word {
+            display: inline-block;
+        }
+        
+        .hero-title-accent {
+            color: var(--accent);
+            display: block;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+            max-width: 480px;
+            margin: 16px auto 0;
+        }
+
+        .input-row {
+            display: flex;
+            max-width: 520px;
+            margin: 48px auto 0;
+            gap: 8px;
+        }
+
+        .hero-input {
+            flex: 1;
+            height: 52px;
+            background: #111111;
+            border: 1px solid #222222;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            padding: 0 20px;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        #username2 {
+            display: none;
+        }
+
+        .hero-input:focus {
+            border-color: var(--accent);
+        }
+        
+        .hero-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .history-chips {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .history-chip {
+            background: #111111;
+            border: 1px solid #222222;
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .history-chip:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .compare-toggle {
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-color: #333333;
+            text-underline-offset: 4px;
+            transition: var(--transition);
+        }
+
+        .compare-toggle:hover {
+            color: var(--text-primary);
+            text-decoration-color: var(--accent);
+        }
+
+        .hero-btn {
+            height: 52px;
+            background: var(--accent);
+            color: #000000;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 0 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        
+        .hero-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .hero-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .scroll-hint {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333333;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            text-transform: lowercase;
+            animation: pulseOpacity 2s infinite ease-in-out;
+        }
+
+        /* 3. LOADING STATE */
+        #loading {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+        
+        .loading-title {
+            color: var(--text-primary);
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        
+        .loading-user {
+            color: var(--accent);
+            font-size: 48px;
+            font-weight: 700;
+            font-style: italic;
+            line-height: 1.1;
+        }
+        
+        .loading-dots::after {
+            content: "";
+            animation: dotPulse 1.5s infinite step-start;
+        }
+
+        /* Error State */
+        #error {
+            display: none;
+            text-align: center;
+            padding: 80px 20px;
+            color: #ef4444;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* 4. RESULTS SECTION */
+        #result {
+            display: none;
+            padding: 80px 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* Part A: Private Dashboard */
+        .section-label {
+            color: var(--accent);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .dashboard-title {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        
+        .dashboard-note {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+        
+        /* Stats Row */
+        .stats-huge-row {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            margin-bottom: 48px;
+        }
+        
+        .stat-huge {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-huge .val {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .stat-huge .lbl {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+        
+        .stat-huge-divider {
+            width: 1px;
+            background: var(--border-color);
+        }
+
+        /* Dash Blocks */
+        .dash-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .dash-block {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px 28px;
+            flex: 1;
+        }
+        
+        .dash-block-val {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .dash-progress-track {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        
+        .dash-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%; /* JS animated */
+            border-radius: 3px;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Languages */
+        .lang-dash-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 14px;
+        }
+        .lang-dash-name { color: var(--text-secondary); font-size: 14px; width: 100px; }
+        .lang-dash-track { flex: 1; height: 6px; background: var(--border-color); border-radius: 3px; }
+        .lang-dash-fill { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: width 0.8s ease; }
+        .lang-dash-pct { color: var(--text-tertiary); font-size: 13px; width: 36px; text-align: right; }
+
+        /* Repositories */
+        .repos-dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .repo-dash-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: border-color 0.2s ease;
+            opacity: 0; /* for animation */
+            transform: translateY(10px);
+            min-width: 0; /* Prevents text from overflowing grid */
+        }
+        .repo-dash-card:hover { border-color: var(--accent); }
+        .repo-dash-name { color: var(--text-primary); font-size: 14px; font-weight: 600; }
+        .repo-dash-desc { color: #555555; font-size: 13px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .repo-dash-footer { color: var(--text-tertiary); font-size: 12px; display: flex; justify-content: space-between; margin-top: 4px; }
+
+        /* Suggestions */
+        .tips-dash-list {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .tip-dash-item {
+            border-left: 3px solid var(--accent);
+            padding-left: 16px;
+            color: #666666;
+            font-size: 14px;
+        }
+        
+        /* Part Divider */
+        .part-divider-wrap {
+            margin: 80px 0;
+            position: relative;
+            text-align: center;
+        }
+        .part-divider-line {
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 1px;
+            background: #111111;
+            z-index: 0;
+        }
+        .part-divider-text {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-page);
+            padding: 0 16px;
+            color: var(--accent);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 600;
+        }
+
+        /* Part B: Shareable Card */
+        .shareable-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #shareable-card {
+            width: 420px;
+            height: 680px;
+            border-radius: 16px;
+            box-shadow: 
+                0 30px 60px rgba(0,0,0,0.9),
+                inset 0 2px 2px rgba(255, 255, 255, 0.15),
+                inset 0 0 40px rgba(249, 115, 22, 0.05);
+            padding: 36px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: none;
+        }
+
+        /* Ensuring all content stays above background effects */
+        .sc-name, .sc-username, .sc-div, .sc-lbl, .sc-vibe, .sc-stats, .sc-stack, .sc-repo-name, .sc-repo-stars, .sc-footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* NEW CARD EFFECTS */
+        .sc-watermark {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 110px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.022);
+            pointer-events: none;
+            z-index: 0;
+            letter-spacing: -0.05em;
+        }
+
+        .sc-shimmer {
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent 0%, rgba(249, 115, 22, 0.04) 10%, transparent 20%);
+            animation: rotateShimmer 15s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes rotateShimmer {
+            100% { transform: rotate(360deg); }
+        }
+        
+        .sc-avatar-wrap {
+            width: 86px; height: 86px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #ffc182, var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        
+        .sc-avatar {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: none;
+        }
+        
+        .sc-name {
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 12px;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+        
+        .sc-username {
+            color: var(--accent);
+            font-size: 14px;
+            text-align: center;
+            margin-top: 4px;
+        }
+        
+        .sc-div {
+            width: 100%;
+            height: 1px;
+            background: #222222;
+            margin: 16px 0;
+        }
+        
+        .sc-lbl {
+            color: var(--accent);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .sc-vibe {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-style: italic;
+            text-align: center;
+            max-width: 300px;
+            margin: 8px auto 0;
+            line-height: 1.4;
+        }
+        
+        .sc-stats {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            margin-top: 24px;
+        }
+        
+        .sc-stat {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .sc-stat-val { color: var(--text-primary); font-size: 28px; font-weight: 800; line-height: 1.1; }
+        .sc-stat-lbl { color: var(--text-secondary); font-size: 10px; text-transform: uppercase; margin-top: 2px; letter-spacing: 0.05em; }
+        
+        .sc-stack {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            width: 100%;
+        }
+        
+        .sc-pill {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            padding: 4px 10px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        
+        .sc-pill-lang { color: var(--text-primary); font-size: 12px; font-weight: 500; }
+        .sc-pill-pct { color: var(--accent); font-size: 11px; font-weight: 600; }
+        
+        .sc-repo-name { color: var(--text-primary); font-size: 16px; font-weight: 700; margin-top: 8px; text-align: center; }
+        .sc-repo-stars { color: var(--text-secondary); font-size: 13px; text-align: center; margin-top: 4px; }
+        .sc-member-since { color: var(--text-secondary); font-size: 11px; text-align: center; margin-top: 10px; letter-spacing: 0.05em; opacity: 0.6; }
+        
+        .sc-footer {
+            margin-top: auto;
+            width: 100%;
+        }
+        .sc-url { color: var(--text-primary); font-size: 12px; text-align: center; margin-top: 16px; }
+        .sc-branding { color: #333333; font-size: 10px; text-align: center; margin-top: 4px; }
+
+        /* Card Actions */
+        .card-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .btn-dl {
+            background: #111111;
+            border: 1px solid #333333;
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-dl:hover { background: #1a1a1a; }
+        
+        .btn-share {
+            background: var(--accent);
+            border: none;
+            color: #000000;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .btn-share:hover { background: var(--accent-hover); }
+
+        /* Compare Result Grid */
+        #compare-result {
+            display: none;
+            max-width: 1000px;
+            margin: 100px auto 64px;
+            padding: 0 24px;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .compare-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .compare-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .compare-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+        }
+
+        .compare-name {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .compare-username {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .compare-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .compare-row:last-child {
+            border-bottom: none;
+        }
+
+        .compare-label {
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .compare-value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .compare-value.winner {
+            color: #22c55e;
+        }
+
+        /* README Generator */
+        .readme-section {
+            margin-top: 64px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .readme-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .readme-textarea {
+            width: 100%;
+            height: 300px;
+            background: #000000;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 13px;
+            padding: 16px;
+            resize: vertical;
+            outline: none;
+        }
+
+        /* Tooltip */
+        .tooltip-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #333;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: help;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            width: 200px;
+            border: 1px solid #333;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .tooltip-wrap:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 40px; }
+            .hero-subtitle { font-size: 14px; padding: 0 8px; }
+            .dash-row { flex-direction: column; gap: 16px; }
+            .repos-dash-grid { grid-template-columns: 1fr; }
+            .stats-huge-row { flex-direction: column; gap: 32px; }
+            .stat-huge-divider { display: none; }
+            .stat-huge .val { font-size: 40px; }
+            #shareable-card { transform: scale(0.75); transform-origin: top center; margin-bottom: -160px; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .input-row { flex-direction: column; gap: 12px; }
+            .hero-input { width: 100%; min-width: unset; }
+            .hero-btn { width: 100%; }
+            .card-actions { flex-direction: column; gap: 12px; }
+            .card-actions .btn-dl,
+            .card-actions .btn-share { width: 100%; text-align: center; }
+            .readme-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .readme-textarea { font-size: 11px; }
+            .nav-inner { padding: 0 16px; }
+            .dashboard-title { font-size: 24px; }
+            .dash-block { padding: 16px; }
+            .dash-block-val { font-size: 20px; }
+            #result { padding: 0 12px; }
+            #compare-result { padding: 0 12px; margin-top: 80px; }
+            .compare-card { padding: 20px; }
+        }
+
+        @media (max-width: 400px) {
+            .hero-title { font-size: 32px; }
+            #shareable-card { transform: scale(0.65); margin-bottom: -220px; }
+            .stat-huge .val { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <nav>
+        <div class="nav-inner">
+            <a href="#" class="logo" onclick="location.reload(); return false;" style="text-decoration: none; color: inherit; cursor: pointer; display: flex; align-items: center; gap: 8px;" title="Back to Home">
+                <span id="nav-back-arrow" style="font-size: 18px; display: none;">&larr;</span> DevCard
+            </a>
+        </div>
+    </nav>
+
+    <div id="hero">
+        <div class="hero-bg-text">DEVCARD</div>
+        
+        <div class="hero-content">
+            <span class="hero-label fade-up" style="animation-delay: 0.1s;">GITHUB DEV CARD GENERATOR</span>
+            <h1 class="hero-title">
+                <span class="word fade-up" style="animation-delay: 0.2s;">Your Developer</span>
+                <span class="hero-title-accent fade-up" style="animation-delay: 0.3s;">Identity.</span>
+            </h1>
+            <p class="hero-subtitle fade-up" style="animation-delay: 0.4s;">Enter any public GitHub username to generate a professional profile card.</p>
+            
+            <div class="input-row fade-up" style="animation-delay: 0.5s;">
+                <input type="text" id="username" class="hero-input" placeholder="github username" spellcheck="false" autocomplete="off">
+                <input type="text" id="username2" class="hero-input" placeholder="second username" spellcheck="false" autocomplete="off">
+                <button class="hero-btn" id="generate-btn">Generate Card</button>
+            </div>
+            
+            <div class="history-chips fade-up" id="history-chips" style="animation-delay: 0.6s;">
+                <!-- History chips injected here -->
+            </div>
+            
+            <div class="compare-toggle fade-up" id="compare-toggle" style="animation-delay: 0.7s;">
+                Switch to Compare Mode
+            </div>
+        </div>
+        
+        <div class="scroll-hint">scroll to see your card</div>
+    </div>
+
+    <div id="loading">
+        <div class="loading-title">Analyzing</div>
+        <div class="loading-user" id="loading-username">@username</div>
+        <div class="loading-title loading-dots"></div>
+    </div>
+    
+    <div id="error">
+        <p id="error-message">Profile not found. Please try again.</p>
+    </div>
+
+    <div id="compare-result" class="fade-up">
+        <h2 style="text-align: center; margin-bottom: 16px; font-size: 32px;">Profile Comparison</h2>
+        <div class="compare-grid" id="compare-grid">
+            <!-- Dynamically populated -->
+        </div>
+        <div style="text-align: center; margin-top: 32px;">
+            <button class="btn-dl" onclick="location.reload()">Reset</button>
+        </div>
+    </div>
+
+    <div id="result">
+        
+        <!-- Part B: Shareable Card -->
+        <div class="shareable-wrap fade-up">
+            <div id="shareable-card">
+                <!-- NEW BACKGROUND EFFECTS -->
+                <div class="sc-watermark">devcard</div>
+                <div class="sc-shimmer"></div>
+                
+                <div class="sc-avatar-wrap">
+                    <img id="sc-avatar" src="" alt="" class="sc-avatar">
+                </div>
+                <div class="sc-name" id="sc-name">Developer Name</div>
+                <div class="sc-username" id="sc-username">@username</div>
+                
+                <div class="sc-div"></div>
+                
+                <div class="sc-lbl">DEVELOPER IDENTITY</div>
+                <div class="sc-vibe" id="sc-vibe">Building the future...</div>
+                
+                <div class="sc-stats">
+                    <div class="sc-stat">
+                        <div class="sc-stat-val" id="sc-val-repos">0</div>
+                        <div class="sc-stat-lbl">Repos</div>
+                    </div>
+                    <div class="sc-stat">
+                        <div class="sc-stat-val" id="sc-val-followers">0</div>
+                        <div class="sc-stat-lbl">Followers</div>
+                    </div>
+                    <div class="sc-stat">
+                        <div class="sc-stat-val" id="sc-val-stars">0</div>
+                        <div class="sc-stat-lbl">Total Stars</div>
+                    </div>
+                </div>
+
+                <div class="sc-member-since" id="sc-member-since">Member since 2015</div>
+                
+                <div class="sc-lbl" style="margin-top: 24px;">STACK</div>
+                <div class="sc-stack" id="sc-stack-container"></div>
+                
+                <div class="sc-lbl" style="margin-top: 24px;">TOP PROJECT</div>
+                <div class="sc-repo-name" id="sc-top-repo">Project Name</div>
+                <div class="sc-repo-stars" id="sc-top-stars">Stars: 0</div>
+                
+                <div class="sc-footer">
+                    <div class="sc-div"></div>
+                    <div class="sc-url" id="sc-url">github.com/username</div>
+                    <div class="sc-branding">Generated by GitHub Dev Card Generator</div>
+                </div>
+            </div>
+            
+            <div class="card-actions">
+                <button class="btn-dl" id="dl-btn">Download Card</button>
+                <a href="#" target="_blank" class="btn-share" id="share-btn">Share on LinkedIn</a>
+            </div>
+        </div>
+
+        <!-- Part Divider -->
+        <div class="part-divider-wrap fade-up">
+            <div class="part-divider-line"></div>
+            <span class="part-divider-text">PRIVATE DASHBOARD</span>
+        </div>
+
+        <!-- Part A: Private Dashboard -->
+        <span class="section-label fade-up">YOUR ANALYSIS</span>
+        <h2 class="dashboard-title fade-up">Profile Breakdown</h2>
+        <p class="dashboard-note fade-up">This data is only visible to you</p>
+        
+        <div class="stats-huge-row fade-up">
+            <div class="stat-huge">
+                <span class="val" id="dash-repos" data-val="0">0</span>
+                <span class="lbl">Repositories</span>
+            </div>
+            <div class="stat-huge-divider"></div>
+            <div class="stat-huge">
+                <span class="val" id="dash-followers" data-val="0">0</span>
+                <span class="lbl">Followers</span>
+            </div>
+            <div class="stat-huge-divider"></div>
+            <div class="stat-huge">
+                <span class="val" id="dash-streak" data-val="0">0</span>
+                <span class="lbl">Day Streak</span>
+            </div>
+        </div>
+        
+        <div class="dash-row fade-up">
+            <div class="dash-block">
+                <span class="section-label" style="margin:0;">SUGGESTED ROLE</span>
+                <div class="dash-block-val" id="dash-role">Software Engineer</div>
+            </div>
+            <div class="dash-block">
+                <span class="section-label" style="margin:0; display: flex; align-items: center;">
+                    PROFILE STRENGTH
+                    <div class="tooltip-wrap">i
+                        <div class="tooltip-content">Calculated as: min(100, (Repos × 3) + (Followers × 0.5) + (Stars × 2))</div>
+                    </div>
+                </span>
+                <div class="dash-block-val"><span id="dash-score" data-val="0">0</span> / 100</div>
+                <div class="dash-progress-track">
+                    <div class="dash-progress-fill" id="dash-progress"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dash-row fade-up">
+            <div class="dash-block">
+                <span class="section-label">TOP LANGUAGES</span>
+                <div id="dash-langs-container"></div>
+            </div>
+        </div>
+        
+        <div class="dash-block fade-up" style="margin-bottom: 24px;">
+            <span class="section-label">TOP REPOSITORIES</span>
+            <div class="repos-dash-grid" id="dash-repos-container"></div>
+        </div>
+        
+        <div class="dash-block fade-up">
+            <span class="section-label">SUGGESTIONS FOR YOU</span>
+            <div class="tips-dash-list" id="dash-tips-container"></div>
+        </div>
+
+        <!-- Part C: README Generator (Moved to bottom) -->
+        <div class="readme-section fade-up">
+            <div class="readme-header">
+                <h3 style="font-size: 20px;">YOUR GITHUB README</h3>
+                <button class="btn-dl" id="copy-readme-btn">Copy Markdown</button>
+            </div>
+            <textarea id="readme-output" class="readme-textarea" readonly></textarea>
+        </div>
+        
+    </div>
+
+    <script>
+        const API_BASE = "";
+
+        // Format large numbers: 48630103 → "48.6M", 195000 → "195K"
+        function fmtNum(n) {
+            n = Number(n) || 0;
+            if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+            if (n >= 1_000_000)     return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+            if (n >= 1_000)         return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+            return String(n);
+        }
+        
+        const generateBtn = document.getElementById('generate-btn');
+        const usernameInput = document.getElementById('username');
+        const loadingSection = document.getElementById('loading');
+        const resultSection = document.getElementById('result');
+        const heroSection = document.getElementById('hero');
+        const errorSection = document.getElementById('error');
+
+        generateBtn.addEventListener('click', generateCard);
+        usernameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateCard();
+        });
+        
+        // Download Card Logic using html2canvas
+        document.getElementById('dl-btn').addEventListener('click', () => {
+            const card = document.getElementById('shareable-card');
+            const dlBtn = document.getElementById('dl-btn');
+            dlBtn.textContent = "Capturing...";
+            dlBtn.disabled = true;
+
+            // Pause the shimmer animation so it doesn't blur in screenshot
+            const shimmer = card.querySelector('.sc-shimmer');
+            if (shimmer) shimmer.style.animationPlayState = 'paused';
+
+            html2canvas(card, {
+                backgroundColor: '#0d0d0d',
+                scale: 3,
+                useCORS: true,
+                allowTaint: false,
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `${document.getElementById('username').value.trim()}-devcard.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                dlBtn.textContent = "Download Card";
+                dlBtn.disabled = false;
+                if (shimmer) shimmer.style.animationPlayState = 'running';
+            }).catch(() => {
+                dlBtn.textContent = "Download Card";
+                dlBtn.disabled = false;
+                if (shimmer) shimmer.style.animationPlayState = 'running';
+            });
+        });
+
+
+        let isCompareMode = false;
+        const historyKey = 'devcard_history';
+
+        document.getElementById('compare-toggle').addEventListener('click', () => {
+            isCompareMode = !isCompareMode;
+            document.getElementById('username2').style.display = isCompareMode ? 'block' : 'none';
+            document.getElementById('compare-toggle').textContent = isCompareMode ? 'Switch to Single Mode' : 'Switch to Compare Mode';
+            document.getElementById('username').placeholder = isCompareMode ? 'enter first username' : 'github username';
+            document.getElementById('username2').placeholder = 'enter second username';
+            if (isCompareMode) document.getElementById('username2').focus();
+        });
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            const container = document.getElementById('history-chips');
+            container.innerHTML = '';
+            history.forEach(u => {
+                const chip = document.createElement('div');
+                chip.className = 'history-chip';
+                chip.textContent = u;
+                chip.onclick = () => {
+                    const u1 = document.getElementById('username');
+                    const u2 = document.getElementById('username2');
+                    
+                    if (isCompareMode) {
+                        if (u1.value.trim() === '') {
+                            u1.value = u;
+                            u2.focus();
+                        } else {
+                            u2.value = u;
+                        }
+                    } else {
+                        u1.value = u;
+                        generateCard();
+                    }
+                };
+                container.appendChild(chip);
+            });
+        }
+
+        function saveHistory(username) {
+            let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            history = history.filter(u => u !== username);
+            history.unshift(username);
+            if (history.length > 5) history.pop();
+            localStorage.setItem(historyKey, JSON.stringify(history));
+            loadHistory();
+        }
+
+        loadHistory(); // Load on init
+
+        async function generateCard() {
+            const usernameInput = document.getElementById('username');
+            const username2Input = document.getElementById('username2');
+            let username = usernameInput.value.trim();
+            let username2 = username2Input.value.trim();
+            
+            if (!username) return;
+
+            // Handle full URLs
+            if (username.includes('github.com/')) {
+                username = username.split('github.com/')[1].split('/')[0];
+                usernameInput.value = username;
+            }
+            if (isCompareMode && username2.includes('github.com/')) {
+                username2 = username2.split('github.com/')[1].split('/')[0];
+                username2Input.value = username2;
+            }
+
+            // UI transitions
+            document.getElementById('nav-back-arrow').style.display = 'inline';
+            heroSection.style.display = 'none';
+            document.getElementById('compare-result').style.display = 'none';
+            resultSection.style.display = 'none';
+            errorSection.style.display = 'none';
+            loadingSection.style.display = 'flex';
+            document.getElementById('loading-username').textContent = isCompareMode ? `@${username} vs @${username2}` : `@${username}`;
+
+            try {
+                if (isCompareMode && username2) {
+                    // Fetch both
+                    const [res1, res2] = await Promise.all([
+                        fetch(`${API_BASE}/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }),
+                        fetch(`${API_BASE}/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: username2 }) })
+                    ]);
+                    
+                    if (!res1.ok || !res2.ok) throw new Error('Failed to fetch one or both profiles');
+                    
+                    const data1 = await res1.json();
+                    const data2 = await res2.json();
+                    
+                    saveHistory(username);
+                    saveHistory(username2);
+                    
+                    populateCompareData(data1, data2);
+                    loadingSection.style.display = 'none';
+                    document.getElementById('compare-result').style.display = 'block';
+                    
+                    // Re-trigger fade
+                    document.querySelectorAll('#compare-result .fade-up').forEach((el, index) => {
+                        el.style.animation = 'none';
+                        el.offsetHeight; 
+                        el.style.animation = `fadeUp 0.6s ease forwards ${index * 0.1}s`;
+                    });
+                } else {
+                    // Single fetch
+                    const response = await fetch(`${API_BASE}/generate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username })
+                    });
+
+                    if (!response.ok) throw new Error('Failed to fetch profile');
+
+                    const data = await response.json();
+                    saveHistory(username);
+                    populateData(username, data);
+                    
+                    loadingSection.style.display = 'none';
+                    resultSection.style.display = 'block';
+                    
+                    // Re-trigger fade animations by forcing reflow
+                    document.querySelectorAll('#result .fade-up').forEach((el, index) => {
+                        el.style.animation = 'none';
+                        el.offsetHeight; /* trigger reflow */
+                        el.style.animation = `fadeUp 0.6s ease forwards ${index * 0.1}s`;
+                    });
+                    
+                    animateNumbers();
+                    animateBars();
+                }
+
+            } catch (err) {
+                loadingSection.style.display = 'none';
+                heroSection.style.display = 'flex';
+                errorSection.style.display = 'block';
+                document.getElementById('error-message').textContent = err.message;
+            }
+        }
+        
+        function populateCompareData(data1, data2) {
+            const gh1 = data1.github_data || {};
+            const gh2 = data2.github_data || {};
+            
+            const name1 = gh1.name || gh1.username || 'User 1';
+            const name2 = gh2.name || gh2.username || 'User 2';
+            
+            const r1 = gh1.public_repos || 0;
+            const r2 = gh2.public_repos || 0;
+            
+            const is_org1 = gh1.account_type === "Organization";
+            const is_org2 = gh2.account_type === "Organization";
+            
+            const f1 = gh1.followers || 0;
+            const f2 = gh2.followers || 0;
+            
+            const s1 = data1.activity_score || 0;
+            const s2 = data2.activity_score || 0;
+            
+            // Calc total stars
+            let st1 = 0;
+            (gh1.top_repos || []).forEach(r => st1 += r.stars);
+            let st2 = 0;
+            (gh2.top_repos || []).forEach(r => st2 += r.stars);
+
+            const grid = document.getElementById('compare-grid');
+            grid.innerHTML = `
+                <div class="compare-card">
+                    <div class="compare-header">
+                        <img src="${gh1.avatar_url}" class="compare-avatar" alt="">
+                        <div>
+                            <div class="compare-name">${name1}</div>
+                            <div class="compare-username">@${gh1.username}</div>
+                        </div>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Activity Score</span>
+                        <span class="compare-value ${s1 > s2 ? 'winner' : ''}">${s1}</span>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Repositories</span>
+                        <span class="compare-value ${r1 > r2 ? 'winner' : ''}">${r1}</span>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Followers</span>
+                        <span class="compare-value ${f1 > f2 ? 'winner' : ''}">${f1}</span>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Total Stars (Top)</span>
+                        <span class="compare-value ${st1 > st2 ? 'winner' : ''}">${st1}</span>
+                    </div>
+                </div>
+
+                <div class="compare-card">
+                    <div class="compare-header">
+                        <img src="${gh2.avatar_url}" class="compare-avatar" alt="">
+                        <div>
+                            <div class="compare-name">${name2}</div>
+                            <div class="compare-username">@${gh2.username}</div>
+                        </div>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Activity Score</span>
+                        <span class="compare-value ${s2 > s1 ? 'winner' : ''}">${s2}</span>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Repositories</span>
+                        <span class="compare-value ${r2 > r1 ? 'winner' : ''}">${r2}</span>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Followers</span>
+                        <span class="compare-value ${f2 > f1 ? 'winner' : ''}">${f2}</span>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">Total Stars (Top)</span>
+                        <span class="compare-value ${st2 > st1 ? 'winner' : ''}">${st2}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function animateNumbers() {
+            const els = [
+                document.getElementById('dash-repos'),
+                document.getElementById('dash-followers'),
+                document.getElementById('dash-streak'),
+                document.getElementById('dash-score')
+            ];
+            
+            els.forEach(el => {
+                const target = parseInt(el.getAttribute('data-val'), 10) || 0;
+                let current = 0;
+                const increment = Math.max(1, Math.floor(target / 30));
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        el.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        el.textContent = current;
+                    }
+                }, 40); // 1.2s roughly (30 frames * 40ms)
+            });
+        }
+        
+        function animateBars() {
+            const scoreVal = document.getElementById('dash-score').getAttribute('data-val') || 0;
+            setTimeout(() => {
+                document.getElementById('dash-progress').style.width = `${scoreVal}%`;
+                
+                document.querySelectorAll('.lang-dash-fill').forEach(el => {
+                    el.style.width = el.getAttribute('data-width');
+                });
+            }, 300); // Wait for fade-in a bit
+        }
+
+        function populateData(username, data) {
+            const gh = data.github_data || {};
+            
+            // Clean streak text (remove emoji if backend didn't)
+            let rawStreak = gh.contribution_streak || '0';
+            const cleanStreak = rawStreak.replace(/[^0-9]/g, '');
+            const streakNum = parseInt(cleanStreak) || 0;
+
+            // --- PART A: DASHBOARD ---
+            document.getElementById('dash-repos').setAttribute('data-val', gh.public_repos || 0);
+            document.getElementById('dash-followers').setAttribute('data-val', gh.followers || 0);
+            document.getElementById('dash-streak').setAttribute('data-val', streakNum);
+            
+            document.getElementById('dash-role').textContent = data.career_suggestion || 'Software Engineer';
+            document.getElementById('dash-score').setAttribute('data-val', data.activity_score || 0);
+            
+            // Languages Dashboard
+            const dashLangs = document.getElementById('dash-langs-container');
+            dashLangs.innerHTML = '';
+            if (gh.languages) {
+                Object.entries(gh.languages).forEach(([lang, pct]) => {
+                    dashLangs.innerHTML += `
+                        <div class="lang-dash-row">
+                            <span class="lang-dash-name">${lang}</span>
+                            <div class="lang-dash-track">
+                                <div class="lang-dash-fill" data-width="${pct}%" style="width: 0%;"></div>
+                            </div>
+                            <span class="lang-dash-pct">${pct}%</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Repos Dashboard
+            const dashRepos = document.getElementById('dash-repos-container');
+            dashRepos.innerHTML = '';
+            let topRepoName = "No projects yet";
+            let topRepoStars = 0;
+            
+            if (gh.top_repos && gh.top_repos.length > 0) {
+                topRepoName = gh.top_repos[0].name;
+                topRepoStars = gh.top_repos[0].stars;
+                
+                gh.top_repos.slice(0, 4).forEach((repo, i) => {
+                    dashRepos.innerHTML += `
+                        <div class="repo-dash-card fade-up" style="animation-delay: ${(0.4 + i*0.1)}s;">
+                            <div class="repo-dash-name">${repo.name}</div>
+                            <div class="repo-dash-desc">${repo.description || 'No description provided.'}</div>
+                            <div class="repo-dash-footer">
+                                <span>Stars: ${repo.stars}</span>
+                                <span>${repo.language || 'Misc'}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Tips Dashboard
+            const dashTips = document.getElementById('dash-tips-container');
+            dashTips.innerHTML = '';
+            (data.profile_tips || []).forEach(tip => {
+                dashTips.innerHTML += `<div class="tip-dash-item">${tip}</div>`;
+            });
+
+            // --- PART B: SHAREABLE CARD ---
+            
+            // Background mapping
+            const cardEl = document.getElementById('shareable-card');
+            cardEl.style.background = 'linear-gradient(135deg, #261200 0%, #000000 45%, #140900 100%)';
+            cardEl.style.border = '1px solid rgba(249, 115, 22, 0.3)';
+            cardEl.style.borderTop = '1px solid rgba(255, 255, 255, 0.15)'; // Glossy top edge
+            
+            document.getElementById('sc-avatar').src = gh.avatar_url || '';
+            document.getElementById('sc-name').textContent = gh.name || username;
+            document.getElementById('sc-username').textContent = `@${username}`;
+            document.getElementById('sc-vibe').textContent = data.developer_vibe || 'Building the future...';
+            
+            document.getElementById('sc-val-repos').textContent = gh.public_repos || '0';
+            document.getElementById('sc-val-followers').textContent = fmtNum(gh.followers || 0);
+            document.getElementById('sc-val-stars').textContent = fmtNum(gh.total_stars || 0);
+            document.getElementById('sc-member-since').textContent = `Member since ${gh.account_created_year || '?'}`;
+            
+            // Stack Pills
+            const scStack = document.getElementById('sc-stack-container');
+            scStack.innerHTML = '';
+            if (gh.languages) {
+                Object.entries(gh.languages).slice(0, 4).forEach(([lang, pct]) => {
+                    scStack.innerHTML += `
+                        <div class="sc-pill">
+                            <span class="sc-pill-lang">${lang}</span>
+                            <span class="sc-pill-pct">${pct}%</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('sc-top-repo').textContent = topRepoName;
+            document.getElementById('sc-top-stars').textContent = `Stars: ${topRepoStars}`;
+            document.getElementById('sc-url').textContent = `github.com/${username}`;
+            
+            // Setup share link
+            const shareUrl = encodeURIComponent(window.location.origin + (data.card_url || ''));
+            document.getElementById('share-btn').href = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
+            
+            // --- PART C: README GENERATOR ---
+            generateReadme(gh, data);
+        }
+
+        function generateReadme(gh, data) {
+            const username = gh.username;
+            const name = gh.name || username;
+            const vibe = data.developer_vibe || '';
+            const topLangs = Object.keys(gh.languages || {}).slice(0, 5);
+            
+            let badges = '';
+            topLangs.forEach(lang => {
+                const safeLang = encodeURIComponent(lang.replace('-', ' '));
+                badges += `![${lang}](https://img.shields.io/badge/${safeLang}-222222?style=for-the-badge&logo=${safeLang}&logoColor=22c55e) `;
+            });
+
+            const markdown = 
+`# Hi there 👋, I'm ${name}
+
+> ${vibe}
+
+## 🚀 About Me
+- 🔭 I’m currently working on building awesome things
+- 🌱 My top skills are: ${data.top_skills ? data.top_skills.join(', ') : 'Coding'}
+- 💡 Fun fact: ${data.fun_fact || 'I love coding'}
+
+## 💻 Tech Stack
+${badges}
+
+## 📊 GitHub Stats
+<div align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=radical&hide_border=true&bg_color=0a0a0a" alt="${username}'s GitHub stats" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&theme=radical&hide_border=true&bg_color=0a0a0a" alt="${username}'s Top Languages" />
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="https://streak-stats.demolab.com?user=${username}&theme=radical&hide_border=true&background=0a0a0a" alt="${username}'s GitHub Streak" />
+</div>
+`;
+
+            document.getElementById('readme-output').value = markdown;
+            
+            document.getElementById('copy-readme-btn').onclick = () => {
+                navigator.clipboard.writeText(markdown);
+                document.getElementById('copy-readme-btn').textContent = 'Copied!';
+                setTimeout(() => {
+                    document.getElementById('copy-readme-btn').textContent = 'Copy Markdown';
+                }, 2000);
+            };
+        }
+    </script>
+</body>
+</html>

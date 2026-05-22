@@ -1,0 +1,27 @@
+# === SECRETS - NEVER COMMIT THESE ===
+.env
+.env.*
+*.key
+
+# === Python ===
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# === Build/Deploy ===
+static/cards/
+static/stats.json
+
+# === IDE ===
+.vscode/
+.idea/
+
+# === OS ===
+Thumbs.db
+.DS_Store
+
+# === Test files ===
+test_*.py
+test_*.js
+test_*.html
