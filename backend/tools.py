@@ -399,3 +399,7 @@ async def get_card_stats(username: str) -> dict:
     """Retrieve generation stats for a user."""
     stats = json.loads(STATS_FILE.read_text())
     return {"username": username, "generation_count": stats.get(username, 0)}
+
+
+
+

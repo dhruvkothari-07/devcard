@@ -528,9 +528,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            perspective: 1000px;
         }
         
         #shareable-card {
+            --card-accent: var(--accent);
+            --card-accent-sec: #ffc182;
+            --card-text-sec: var(--text-secondary);
+            
             width: 420px;
             height: 680px;
             border-radius: 16px;
@@ -545,6 +550,60 @@
             position: relative;
             overflow: hidden;
             border: none;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            transform-style: preserve-3d;
+            transform: rotateX(0deg) rotateY(0deg);
+        }
+
+        .sc-glare {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #shareable-card.theme-gold {
+            --card-accent: #f97316;
+            --card-accent-sec: #ffc182;
+            --card-text-sec: #888888;
+            background: linear-gradient(135deg, #261200 0%, #000000 45%, #140900 100%) !important;
+            border: 1px solid rgba(249, 115, 22, 0.3) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 2px 2px rgba(255, 255, 255, 0.15), inset 0 0 40px rgba(249, 115, 22, 0.05) !important;
+        }
+
+        #shareable-card.theme-cyberpunk {
+            --card-accent: #00f0ff;
+            --card-accent-sec: #ff007f;
+            --card-text-sec: #a1a1aa;
+            background: linear-gradient(135deg, #18002a 0%, #010008 50%, #0b001a 100%) !important;
+            border: 1px solid rgba(255, 0, 127, 0.4) !important;
+            border-top: 1px solid rgba(0, 240, 255, 0.5) !important;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(0, 240, 255, 0.1), 0 0 20px rgba(255, 0, 127, 0.2) !important;
+        }
+
+        #shareable-card.theme-glass {
+            --card-accent: #a855f7;
+            --card-accent-sec: #6366f1;
+            --card-text-sec: #94a3b8;
+            background: rgba(13, 14, 37, 0.65) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 30px rgba(255, 255, 255, 0.02) !important;
+        }
+
+        #shareable-card.theme-matrix {
+            --card-accent: #00ff00;
+            --card-accent-sec: #00ff00;
+            --card-text-sec: #00aa00;
+            font-family: 'Share Tech Mono', monospace !important;
+            background: #000000 !important;
+            border: 1px solid #00ff00 !important;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.25), inset 0 0 15px rgba(0, 255, 0, 0.1) !important;
         }
 
         .sc-name, .sc-username, .sc-div, .sc-lbl, .sc-vibe, .sc-stats, .sc-stack, .sc-repo-name, .sc-repo-stars, .sc-footer {
@@ -552,7 +611,6 @@
             z-index: 2;
         }
 
-        /* NEW CARD EFFECTS */
         .sc-watermark {
             position: absolute;
             top: 50%; left: 50%;
@@ -575,6 +633,19 @@
             z-index: 0;
         }
 
+        .theme-gold .sc-shimmer {
+            background: conic-gradient(from 0deg, transparent 0%, rgba(249, 115, 22, 0.04) 10%, transparent 20%) !important;
+        }
+        .theme-cyberpunk .sc-shimmer {
+            background: conic-gradient(from 0deg, transparent 0%, rgba(0, 240, 255, 0.06) 10%, transparent 20%) !important;
+        }
+        .theme-glass .sc-shimmer {
+            background: conic-gradient(from 0deg, transparent 0%, rgba(168, 85, 247, 0.05) 10%, transparent 20%) !important;
+        }
+        .theme-matrix .sc-shimmer {
+            background: conic-gradient(from 0deg, transparent 0%, rgba(0, 255, 0, 0.05) 10%, transparent 20%) !important;
+        }
+
         @keyframes rotateShimmer {
             100% { transform: rotate(360deg); }
         }
@@ -582,7 +653,7 @@
         .sc-avatar-wrap {
             width: 86px; height: 86px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #ffc182, var(--accent));
+            background: linear-gradient(135deg, var(--card-accent), var(--card-accent-sec), var(--card-accent));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -590,6 +661,7 @@
             position: relative;
             z-index: 2;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: var(--transition);
         }
         
         .sc-avatar {
@@ -609,10 +681,11 @@
         }
         
         .sc-username {
-            color: var(--accent);
+            color: var(--card-accent);
             font-size: 14px;
             text-align: center;
             margin-top: 4px;
+            transition: var(--transition);
         }
         
         .sc-div {
@@ -623,12 +696,13 @@
         }
         
         .sc-lbl {
-            color: var(--accent);
+            color: var(--card-accent);
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.15em;
             text-align: center;
             font-weight: 600;
+            transition: var(--transition);
         }
         
         .sc-vibe {
@@ -654,7 +728,7 @@
         }
         
         .sc-stat-val { color: var(--text-primary); font-size: 28px; font-weight: 800; line-height: 1.1; }
-        .sc-stat-lbl { color: var(--text-secondary); font-size: 10px; text-transform: uppercase; margin-top: 2px; letter-spacing: 0.05em; }
+        .sc-stat-lbl { color: var(--card-text-sec); font-size: 10px; text-transform: uppercase; margin-top: 2px; letter-spacing: 0.05em; transition: var(--transition); }
         
         .sc-stack {
             display: flex;
@@ -676,11 +750,11 @@
         }
         
         .sc-pill-lang { color: var(--text-primary); font-size: 12px; font-weight: 500; }
-        .sc-pill-pct { color: var(--accent); font-size: 11px; font-weight: 600; }
+        .sc-pill-pct { color: var(--card-accent); font-size: 11px; font-weight: 600; transition: var(--transition); }
         
         .sc-repo-name { color: var(--text-primary); font-size: 16px; font-weight: 700; margin-top: 8px; text-align: center; }
-        .sc-repo-stars { color: var(--text-secondary); font-size: 13px; text-align: center; margin-top: 4px; }
-        .sc-member-since { color: var(--text-secondary); font-size: 11px; text-align: center; margin-top: 10px; letter-spacing: 0.05em; opacity: 0.6; }
+        .sc-repo-stars { color: var(--card-text-sec); font-size: 13px; text-align: center; margin-top: 4px; transition: var(--transition); }
+        .sc-member-since { color: var(--card-text-sec); font-size: 11px; text-align: center; margin-top: 10px; letter-spacing: 0.05em; opacity: 0.6; transition: var(--transition); }
         
         .sc-footer {
             margin-top: auto;
@@ -688,6 +762,62 @@
         }
         .sc-url { color: var(--text-primary); font-size: 12px; text-align: center; margin-top: 16px; }
         .sc-branding { color: #333333; font-size: 10px; text-align: center; margin-top: 4px; }
+
+        /* Theme Selector */
+        .theme-selector-wrap {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .theme-btn {
+            background: #111111;
+            border: 1px solid #222222;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .theme-btn:hover {
+            color: var(--text-primary);
+            border-color: #444444;
+        }
+        .theme-btn.active {
+            color: var(--text-primary);
+            background: #222222;
+        }
+        .theme-btn.btn-gold-theme.active { border-color: #f97316; }
+        .theme-btn.btn-cyberpunk-theme.active { border-color: #00f0ff; }
+        .theme-btn.btn-glass-theme.active { border-color: #a855f7; }
+        .theme-btn.btn-matrix-theme.active { border-color: #00ff00; }
+
+        /* Repo selection decoration */
+        .repo-dash-card.selectable {
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+        .repo-dash-card.selectable:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .repo-dash-card.selectable.featured {
+            border-color: var(--accent);
+            background: rgba(249, 115, 22, 0.04);
+        }
+        .featured-badge {
+            background: var(--accent);
+            color: #000000;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
 
         /* Card Actions */
         .card-actions {
@@ -969,6 +1099,7 @@
                 <!-- NEW BACKGROUND EFFECTS -->
                 <div class="sc-watermark">devcard</div>
                 <div class="sc-shimmer"></div>
+                <div class="sc-glare"></div>
                 
                 <div class="sc-avatar-wrap">
                     <img id="sc-avatar" src="" alt="" class="sc-avatar">
@@ -1010,6 +1141,13 @@
                     <div class="sc-url" id="sc-url">github.com/username</div>
                     <div class="sc-branding">Generated by GitHub Dev Card Generator</div>
                 </div>
+            </div>
+            
+            <div class="theme-selector-wrap">
+                <button class="theme-btn btn-gold-theme active" data-theme="gold">Gold</button>
+                <button class="theme-btn btn-cyberpunk-theme" data-theme="cyberpunk">Cyberpunk</button>
+                <button class="theme-btn btn-glass-theme" data-theme="glass">Glass</button>
+                <button class="theme-btn btn-matrix-theme" data-theme="matrix">Matrix</button>
             </div>
             
             <div class="card-actions">
@@ -1408,7 +1546,6 @@
         function populateData(username, data) {
             const gh = data.github_data || {};
             
-            // Clean streak text (remove emoji if backend didn't)
             let rawStreak = gh.contribution_streak || '0';
             const cleanStreak = rawStreak.replace(/[^0-9]/g, '');
             const streakNum = parseInt(cleanStreak) || 0;
@@ -1421,7 +1558,6 @@
             document.getElementById('dash-role').textContent = data.career_suggestion || 'Software Engineer';
             document.getElementById('dash-score').setAttribute('data-val', data.activity_score || 0);
             
-            // Languages Dashboard
             const dashLangs = document.getElementById('dash-langs-container');
             dashLangs.innerHTML = '';
             if (gh.languages) {
@@ -1438,7 +1574,7 @@
                 });
             }
             
-            // Repos Dashboard
+            // Repos Dashboard with Selector support
             const dashRepos = document.getElementById('dash-repos-container');
             dashRepos.innerHTML = '';
             let topRepoName = "No projects yet";
@@ -1448,10 +1584,13 @@
                 topRepoName = gh.top_repos[0].name;
                 topRepoStars = gh.top_repos[0].stars;
                 
-                gh.top_repos.slice(0, 4).forEach((repo, i) => {
+                gh.top_repos.slice(0, 6).forEach((repo, i) => {
                     dashRepos.innerHTML += `
-                        <div class="repo-dash-card fade-up" style="animation-delay: ${(0.4 + i*0.1)}s;">
-                            <div class="repo-dash-name">${repo.name}</div>
+                        <div class="repo-dash-card selectable fade-up ${i === 0 ? 'featured' : ''}" data-index="${i}" style="animation-delay: ${(0.4 + i*0.1)}s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <div class="repo-dash-name">${repo.name}</div>
+                                <span class="featured-badge" style="${i === 0 ? 'display: block;' : 'display: none;'}">Featured</span>
+                            </div>
                             <div class="repo-dash-desc">${repo.description || 'No description provided.'}</div>
                             <div class="repo-dash-footer">
                                 <span>Stars: ${repo.stars}</span>
@@ -1462,7 +1601,6 @@
                 });
             }
             
-            // Tips Dashboard
             const dashTips = document.getElementById('dash-tips-container');
             dashTips.innerHTML = '';
             (data.profile_tips || []).forEach(tip => {
@@ -1470,12 +1608,73 @@
             });
 
             // --- PART B: SHAREABLE CARD ---
-            
-            // Background mapping
             const cardEl = document.getElementById('shareable-card');
-            cardEl.style.background = 'linear-gradient(135deg, #261200 0%, #000000 45%, #140900 100%)';
-            cardEl.style.border = '1px solid rgba(249, 115, 22, 0.3)';
-            cardEl.style.borderTop = '1px solid rgba(255, 255, 255, 0.15)'; // Glossy top edge
+            
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            themeButtons.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', () => {
+                    const themeName = newBtn.getAttribute('data-theme');
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll(`.theme-btn[data-theme="${themeName}"]`).forEach(b => b.classList.add('active'));
+                    
+                    cardEl.className = `theme-${themeName}`;
+                });
+            });
+
+            cardEl.className = 'theme-gold';
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.theme-btn[data-theme="gold"]').forEach(b => b.classList.add('active'));
+            
+            // 3D Hover & Glare Effect
+            const glareEl = cardEl.querySelector('.sc-glare');
+            cardEl.addEventListener('mousemove', (e) => {
+                const rect = cardEl.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = -(y - centerY) / 20;
+                const rotateY = (x - centerX) / 15;
+                
+                cardEl.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                
+                if (glareEl) {
+                    glareEl.style.opacity = '1';
+                    glareEl.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.12) 0%, transparent 55%)`;
+                }
+            });
+            
+            cardEl.addEventListener('mouseleave', () => {
+                cardEl.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                if (glareEl) {
+                    glareEl.style.opacity = '0';
+                }
+            });
+
+            // Repository interactive highlight selection logic
+            document.querySelectorAll('.repo-dash-card.selectable').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.repo-dash-card.selectable').forEach(c => {
+                        c.classList.remove('featured');
+                        c.querySelector('.featured-badge').style.display = 'none';
+                    });
+                    
+                    card.classList.add('featured');
+                    card.querySelector('.featured-badge').style.display = 'block';
+                    
+                    const index = parseInt(card.getAttribute('data-index'), 10);
+                    const selectedRepo = gh.top_repos[index];
+                    if (selectedRepo) {
+                        document.getElementById('sc-top-repo').textContent = selectedRepo.name;
+                        document.getElementById('sc-top-stars').textContent = `Stars: ${selectedRepo.stars}`;
+                    }
+                });
+            });
             
             document.getElementById('sc-avatar').src = gh.avatar_url || '';
             document.getElementById('sc-name').textContent = gh.name || username;
@@ -1487,7 +1686,6 @@
             document.getElementById('sc-val-stars').textContent = fmtNum(gh.total_stars || 0);
             document.getElementById('sc-member-since').textContent = `Member since ${gh.account_created_year || '?'}`;
             
-            // Stack Pills
             const scStack = document.getElementById('sc-stack-container');
             scStack.innerHTML = '';
             if (gh.languages) {
@@ -1505,11 +1703,9 @@
             document.getElementById('sc-top-stars').textContent = `Stars: ${topRepoStars}`;
             document.getElementById('sc-url').textContent = `github.com/${username}`;
             
-            // Setup share link
             const shareUrl = encodeURIComponent(window.location.origin + (data.card_url || ''));
             document.getElementById('share-btn').href = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
             
-            // --- PART C: README GENERATOR ---
             generateReadme(gh, data);
         }
 
