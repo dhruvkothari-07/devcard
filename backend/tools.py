@@ -7,7 +7,6 @@ from pathlib import Path
 
 load_dotenv()
 
-# Configure Directories
 BASE_DIR = Path(__file__).parent.parent
 STATIC_DIR = BASE_DIR / "static"
 CARDS_DIR = STATIC_DIR / "cards"
@@ -26,19 +25,16 @@ async def scrape_github(username: str) -> dict:
         headers["Authorization"] = f"Bearer {token}"
 
     async with httpx.AsyncClient(headers=headers) as client:
-        # User details
         user_res = await client.get(f"https://api.github.com/users/{username}")
         if user_res.status_code != 200:
             return {"error": "User not found"}
         user = user_res.json()
 
-        # Repos
         repos_res = await client.get(
             f"https://api.github.com/users/{username}/repos?sort=updated&per_page=100"
         )
         repos = repos_res.json() if repos_res.status_code == 200 else []
 
-    # Aggregate languages
     languages = {}
     total_repos_with_lang = 0
     days_of_week = []
@@ -68,7 +64,6 @@ async def scrape_github(username: str) -> dict:
         max(set(days_of_week), key=days_of_week.count) if days_of_week else "Unknown"
     )
 
-    # Top 6 repos
     top_repos = sorted(
         repos, key=lambda x: x.get("stargazers_count", 0), reverse=True
     )[:6]
@@ -82,12 +77,10 @@ async def scrape_github(username: str) -> dict:
         for r in top_repos
     ]
     
-    # Activity score calculation
     followers_count = user.get("followers", 0)
     public_repos_count = user.get("public_repos", 0)
     activity_score = min(100, (public_repos_count * 3) + (followers_count * 0.5) + (total_stars * 2))
     
-    # Card theme determination
     top_lang = top_langs[0][0].lower() if top_langs else ""
     if top_lang in ["python", "jupyter notebook"]:
         card_theme = "researcher"
@@ -100,11 +93,10 @@ async def scrape_github(username: str) -> dict:
     else:
         card_theme = "open-source-hero"
 
-    # Calculate Real Streak from HTML
+    # Fetch contributions to calculate streak
     current_streak = 0
     try:
         contrib_url = f"https://github.com/users/{username}/contributions"
-        # Create a new client or just reuse the existing httpx without auth for the public HTML
         async with httpx.AsyncClient() as c:
             contrib_res = await c.get(contrib_url)
             if contrib_res.status_code == 200:
@@ -151,12 +143,9 @@ async def scrape_github(username: str) -> dict:
 async def analyze_profile(github_data: dict) -> dict:
     """Analyze GitHub data to generate developer insights."""
     import random
-    
-    # 1. Top Skills
     langs = list(github_data.get("languages", {}).keys())
     top_skills = langs[:3] if langs else ["Git", "Debugging", "Learning"]
     
-    # 2. Career Suggestion
     theme = github_data.get("card_theme", "builder")
     suggestions = {
         "hacker": "Systems Engineer",
@@ -167,7 +156,6 @@ async def analyze_profile(github_data: dict) -> dict:
     }
     career = suggestions.get(theme, "Software Engineer")
     
-    # 3. Smart Developer Identity (org-aware + language-aware)
     followers = github_data.get("followers", 0) or 0
     account_type = github_data.get("account_type", "User")
     top_lang = langs[0].lower() if langs else ""
@@ -229,8 +217,6 @@ async def analyze_profile(github_data: dict) -> dict:
             "Building in public, learning every day.",
             "Writing code that makes a difference."
         ])
-    
-    # 4. Profile Tips
     tips = []
     repos = github_data.get("public_repos", 0) or 0
     
@@ -249,7 +235,6 @@ async def analyze_profile(github_data: dict) -> dict:
     else:
         tips.append(f"Contribute to open source {top_skills[0]} projects.")
         
-    # 5. Fun Fact
     fun_fact = f"Most productive on {github_data.get('most_active_day', 'weekdays')}s."
 
     return {
@@ -276,11 +261,9 @@ async def generate_card_html(
     bg_color = themes.get(theme, themes["builder"])
     accent_color = "#238636" if theme == "hacker" else "#58a6ff"
 
-    # Progress ring calculation
     score = github_data.get("activity_score", 50)
     offset = 440 - (440 * score / 100)
 
-    # Language chart HTML
     lang_html = ""
     for lang, pct in github_data.get("languages", {}).items():
         lang_html += f"""
@@ -291,7 +274,6 @@ async def generate_card_html(
         </div>
         """
 
-    # Repos HTML
     repos_html = ""
     for repo in github_data.get("top_repos", [])[:3]:
         repos_html += f"""
@@ -301,7 +283,6 @@ async def generate_card_html(
         </div>
         """
 
-    # Tips HTML
     tips_html = "".join(
         [f"<li>{tip}</li>" for tip in analysis.get("profile_tips", [])]
     )
@@ -407,7 +388,6 @@ async def save_card(username: str, html: str) -> str:
     file_path = CARDS_DIR / f"{username}.html"
     file_path.write_text(html, encoding="utf-8")
 
-    # Update stats
     stats = json.loads(STATS_FILE.read_text())
     stats[username] = stats.get(username, 0) + 1
     STATS_FILE.write_text(json.dumps(stats))

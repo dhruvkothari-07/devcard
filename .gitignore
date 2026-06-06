@@ -1,27 +1,27 @@
-# === SECRETS - NEVER COMMIT THESE ===
+# Environment keys
 .env
 .env.*
 *.key
 
-# === Python ===
+# Python build files
 .venv/
 __pycache__/
 *.pyc
 *.pyo
 
-# === Build/Deploy ===
+# Local cards and stats cache
 static/cards/
 static/stats.json
 
-# === IDE ===
+# Editor / IDE configuration
 .vscode/
 .idea/
 
-# === OS ===
+# OS specific files
 Thumbs.db
 .DS_Store
 
-# === Test files ===
+# Temporary test scripts
 test_*.py
 test_*.js
 test_*.html

@@ -547,7 +547,6 @@
             border: none;
         }
 
-        /* Ensuring all content stays above background effects */
         .sc-name, .sc-username, .sc-div, .sc-lbl, .sc-vibe, .sc-stats, .sc-stack, .sc-repo-name, .sc-repo-stars, .sc-footer {
             position: relative;
             z-index: 2;
@@ -932,7 +931,6 @@
             </div>
             
             <div class="history-chips fade-up" id="history-chips" style="animation-delay: 0.6s;">
-                <!-- History chips injected here -->
             </div>
             
             <div class="compare-toggle fade-up" id="compare-toggle" style="animation-delay: 0.7s;">
@@ -1098,7 +1096,6 @@
     <script>
         const API_BASE = "";
 
-        // Format large numbers: 48630103 → "48.6M", 195000 → "195K"
         function fmtNum(n) {
             n = Number(n) || 0;
             if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
@@ -1126,7 +1123,6 @@
             dlBtn.textContent = "Capturing...";
             dlBtn.disabled = true;
 
-            // Pause the shimmer animation so it doesn't blur in screenshot
             const shimmer = card.querySelector('.sc-shimmer');
             if (shimmer) shimmer.style.animationPlayState = 'paused';
 
